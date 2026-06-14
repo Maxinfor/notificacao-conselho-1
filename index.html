@@ -2,18 +2,20 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <link rel="stylesheet" href="[https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css](https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css)">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Notificações - Conselho Tutelar</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         body { font-family: Arial, sans-serif; background-color: #f4f6f9; padding: 15px; margin: 0; display: flex; justify-content: center; }
         .container { background-color: #fff; padding: 20px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); width: 100%; max-width: 450px; box-sizing: border-box; }
-        <h2>Notificação de Atendimento</h2>, adicione o ícone:
-<div style="text-align:center; font-size: 40px; color: #007bff;"><i class="fa-solid fa-bell"></i></div>
+        .logo-box { text-align: center; font-size: 40px; color: #007bff; margin-bottom: 10px; }
         h2 { text-align: center; color: #333; margin-top: 0; font-size: 22px; }
+        /* Força letra maiúscula em todos os inputs */
+        input { text-transform: uppercase; }
         .form-group { margin-bottom: 15px; }
         label { display: block; font-weight: bold; margin-bottom: 5px; color: #555; font-size: 14px; }
-        input[type="text"], input[type="date"], input[type="time"], input[type="tel"] { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; font-size: 16px; }
+        input[type="text"], input[type="date"], input[type="time"], input[type="tel"], #pesquisa { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; font-size: 16px; }
+        #pesquisa { background-color: #fffde7; border: 2px solid #ffeb3b; margin-bottom: 20px; }
         .checkbox-group { margin: 15px 0; display: flex; align-items: center; background: #f9f9f9; padding: 10px; border-radius: 6px; }
         .checkbox-group input { width: 20px; height: 20px; cursor: pointer; }
         #campoCrianca { display: none; margin-bottom: 15px; }
@@ -27,48 +29,63 @@
 <body>
 
 <div class="container">
+    <div class="logo-box"><i class="fa-solid fa-bell"></i></div>
     <h2>Notificação de Atendimento</h2>
-    
-    <div class="form-group">
+
+    <!-- Campo de Pesquisa -->
+    <input type="text" id="pesquisa" placeholder="🔍 PESQUISAR NO FORMULÁRIO..." onkeyup="filtrarCampos()">
+
+    <div class="form-group campo-item">
         <label>Responsável:</label>
-        <input type="text" id="responsavel" placeholder="Nome do responsável">
+        <input type="text" id="responsavel" placeholder="NOME DO RESPONSÁVEL">
     </div>
 
-    <div class="checkbox-group">
+    <div class="checkbox-group campo-item">
         <input type="checkbox" id="checkCrianca" onchange="alternarCampoCrianca()">
-        <label for="checkCrianca" style="margin-left: 10px; cursor: pointer;">Chamar a criança junto?</label>
+        <label for="checkCrianca" style="margin-left: 10px; cursor: pointer;">CHAMAR A CRIANÇA JUNTO?</label>
     </div>
 
-    <div class="form-group" id="campoCrianca">
+    <div class="form-group campo-item" id="campoCrianca">
         <label>Nome da Criança:</label>
-        <input type="text" id="nomeCrianca" placeholder="Nome da criança">
+        <input type="text" id="nomeCrianca" placeholder="NOME DA CRIANÇA">
     </div>
 
-    <div class="form-group">
+    <div class="form-group campo-item">
         <label>Data:</label>
         <input type="date" id="data">
     </div>
 
-    <div class="form-group">
+    <div class="form-group campo-item">
         <label>Horário:</label>
         <input type="time" id="horario">
     </div>
 
-    <div class="form-group">
+    <div class="form-group campo-item">
         <label>Conselheiro(a):</label>
-        <input type="text" id="conselheiro" placeholder="Nome do(a) conselheiro(a)">
+        <input type="text" id="conselheiro" placeholder="NOME DO(A) CONSELHEIRO(A)">
     </div>
 
-    <div class="form-group">
+    <div class="form-group campo-item">
         <label>Telefone do Responsável (com DDD):</label>
-        <input type="tel" id="telefone" placeholder="Ex: 11999999999">
+        <input type="tel" id="telefone" placeholder="EX: 11999999999">
     </div>
 
-    <button class="btn-whatsapp" onclick="enviarNotificacao()">Enviar Notificação (WhatsApp)</button>
-    <button class="btn-confirmacao" onclick="enviarConfirmacao()">Confirmar ao Conselheiro (Azul)</button>
+    <button class="btn-whatsapp" onclick="enviarNotificacao()">ENVIAR NOTIFICAÇÃO (WHATSAPP)</button>
+    <button class="btn-confirmacao" onclick="enviarConfirmacao()">CONFIRMAR AO CONSELHEIRO</button>
 </div>
 
 <script>
+    // Função para filtrar campos
+    function filtrarCampos() {
+        const termo = document.getElementById('pesquisa').value.toUpperCase();
+        const itens = document.getElementsByClassName('campo-item');
+        
+        for (let i = 0; i < itens.length; i++) {
+            const texto = itens[i].innerText.toUpperCase();
+            itens[i].style.display = texto.includes(termo) ? "" : "none";
+        }
+    }
+
     function alternarCampoCrianca() {
         const campo = document.getElementById('campoCrianca');
         campo.style.display = document.getElementById('checkCrianca').checked ? 'block' : 'none';
@@ -89,13 +106,13 @@
         const comCrianca = document.getElementById('checkCrianca').checked;
 
         if (!resp || !dataInput || !hora) {
-            alert("Por favor, preencha o Responsável, Data e Horário.");
+            alert("POR FAVOR, PREENCHA O RESPONSÁVEL, DATA E HORÁRIO.");
             return;
         }
 
         const data = formatarData(dataInput);
-        let msg = `Bom dia, aqui é o Conselho Tutelar. Você está sendo notificado(a) a comparecer no dia ${data} às ${hora}`;
-        if (comCrianca && crianca) msg += ` junto com a criança ${crianca}`;
+        let msg = `BOM DIA, AQUI É O CONSELHO TUTELAR. VOCÊ ESTÁ SENDO NOTIFICADO(A) A COMPARECER NO DIA ${data} ÀS ${hora}`;
+        if (comCrianca && crianca) msg += ` JUNTO COM A CRIANÇA ${crianca}`;
         msg += ".";
 
         window.open(`https://api.whatsapp.com/send?phone=55${tel}&text=${encodeURIComponent(msg)}`, '_blank');
@@ -108,12 +125,12 @@
         const hora = document.getElementById('horario').value;
 
         if (!resp || !dataInput || !hora || !conselheiro) {
-            alert("Por favor, preencha todos os campos para confirmar.");
+            alert("POR FAVOR, PREENCHA TODOS OS CAMPOS PARA CONFIRMAR.");
             return;
         }
 
         const data = formatarData(dataInput);
-        const msg = `Olá ${conselheiro}, a presença do Responsável ${resp} para o atendimento do dia ${data} às ${hora} foi confirmada.`;
+        const msg = `OLÁ ${conselheiro}, A PRESENÇA DO RESPONSÁVEL ${resp} PARA O ATENDIMENTO DO DIA ${data} ÀS ${hora} FOI CONFIRMADA.`;
         
         window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(msg)}`, '_blank');
     }
