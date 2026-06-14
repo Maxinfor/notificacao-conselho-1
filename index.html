@@ -4,10 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SISTEMA CONSELHO TUTELAR</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23007bff'><path d='M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 10.99h7c-.53 4.12-3.28 7.79-7 8.94V12H5V6.3l7-3.11v8.8z'/></svg>">
     <style>
         body { font-family: Arial, sans-serif; background-color: #f4f6f9; padding: 15px; margin: 0; }
         .container { background-color: #fff; padding: 20px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); max-width: 450px; margin: auto; }
+        /* Logo no topo */
+        .logo-header { text-align: center; margin-bottom: 15px; }
+        .logo-header svg { width: 60px; height: 60px; fill: #007bff; }
         .tab-btn { width: 48%; padding: 10px; cursor: pointer; border: none; border-radius: 6px; background: #e0e0e0; font-weight: bold; }
         .active-tab { background: #007bff; color: white; }
         input { text-transform: uppercase; width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; margin-bottom: 10px; }
@@ -22,10 +25,13 @@
 <body>
 
 <div class="container">
+    <div class="logo-header">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 10.99h7c-.53 4.12-3.28 7.79-7 8.94V12H5V6.3l7-3.11v8.8z"/></svg>
+    </div>
+
     <button class="tab-btn active-tab" onclick="mostrar('cadastro')">CADASTRO</button>
     <button class="tab-btn" onclick="mostrar('pesquisa')">PESQUISAR</button>
 
-    <!-- TELA CADASTRO -->
     <div id="cadastro" class="view active-view">
         <h3 style="text-align:center;">NOVA NOTIFICAÇÃO</h3>
         <input type="text" id="resp" placeholder="RESPONSÁVEL">
@@ -35,10 +41,9 @@
         <input type="text" id="conselheiro" placeholder="CONSELHEIRO(A)">
         <input type="tel" id="telefone" placeholder="TELEFONE (DDD+NUMERO)">
         
-        <button class="btn-acao" style="background: #25D366;" onclick="salvarENotificar()">SALVAR E NOTIFICAR RESPONSÁVEL</button>
+        <button class="btn-acao" style="background: #25D366;" onclick="salvarENotificar()">SALVAR E NOTIFICAR</button>
     </div>
 
-    <!-- TELA PESQUISA -->
     <div id="pesquisa" class="view">
         <h3 style="text-align:center;">GESTÃO DE CONFIRMAÇÕES</h3>
         <input type="text" id="inputBusca" placeholder="BUSCAR POR NOME..." onkeyup="filtrarLista()">
@@ -58,7 +63,7 @@
 
     function salvarENotificar() {
         const novo = {
-            id: Date.now(), // ID único para controle
+            id: Date.now(),
             resp: document.getElementById('resp').value,
             crianca: document.getElementById('crianca').value,
             data: document.getElementById('data').value,
@@ -68,7 +73,6 @@
             status: 'PENDENTE'
         };
         
-        // Disparar WhatsApp
         const dataF = novo.data.split('-').reverse().join('/');
         const msg = `BOM DIA, AQUI É O CONSELHO TUTELAR. VOCÊ ESTÁ SENDO NOTIFICADO(A) A COMPARECER NO DIA ${dataF} ÀS ${novo.hora}.`;
         window.open(`https://api.whatsapp.com/send?phone=55${novo.tel.replace(/\D/g, '')}&text=${encodeURIComponent(msg)}`, '_blank');
@@ -85,8 +89,6 @@
         const msg = `OLÁ ${item.conselheiro}, A PRESENÇA DO RESPONSÁVEL ${item.resp} PARA O ATENDIMENTO DO DIA ${dataF} ÀS ${item.hora} FOI CONFIRMADA.`;
         
         window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(msg)}`, '_blank');
-        
-        // Atualizar status no sistema
         item.status = 'CONFIRMADO';
         localStorage.setItem('atendimentos', JSON.stringify(bancoDados));
         filtrarLista();
@@ -112,7 +114,6 @@
         });
     }
     
-    // Inicializar lista
     filtrarLista();
 </script>
 
