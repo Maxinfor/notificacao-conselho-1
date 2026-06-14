@@ -5,17 +5,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SISTEMA CTPAR</title>
     
-    <!-- Ícones para aparecerem bonitos na tela inicial do celular -->
-    <link rel="apple-touch-icon" href="https://img.icons8.com/color/96/000000/protection-mask.png">
-    <link rel="icon" type="image/png" href="https://img.icons8.com/color/96/000000/protection-mask.png">
+    <!-- Ícone oficial para a tela inicial -->
+    <link rel="apple-touch-icon" href="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c5/Logo_Conselho_Tutelar_Brasil.png/240px-Logo_Conselho_Tutelar_Brasil.png">
+    <link rel="icon" type="image/png" href="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c5/Logo_Conselho_Tutelar_Brasil.png/240px-Logo_Conselho_Tutelar_Brasil.png">
     
     <style>
         body { font-family: 'Segoe UI', Arial, sans-serif; background-color: #f4f6f9; padding: 15px; margin: 0; }
         .container { background-color: #fff; padding: 20px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); max-width: 450px; margin: auto; }
         
-        .logo-ctpar { text-align: center; margin-bottom: 15px; }
-        .logo-ctpar h1 { margin: 0; color: #007bff; font-size: 32px; letter-spacing: 2px; text-shadow: 1px 1px 2px #ccc; }
-        .logo-ctpar span { display: block; font-size: 12px; color: #555; letter-spacing: 1px; }
+        /* Logo Nacional */
+        .logo-header { text-align: center; margin-bottom: 15px; }
+        .logo-header img { width: 100px; height: auto; }
+        .titulo-ctpar { text-align: center; color: #007bff; margin: -10px 0 15px 0; font-weight: bold; }
 
         .tab-btn { width: 48%; padding: 10px; cursor: pointer; border: none; border-radius: 6px; background: #e0e0e0; font-weight: bold; }
         .active-tab { background: #007bff; color: white; }
@@ -31,10 +32,11 @@
 <body>
 
 <div class="container">
-    <div class="logo-ctpar">
-        <h1>CTPAR</h1>
-        <span>CONSELHO TUTELAR</span>
+    <!-- Logo Nacional -->
+    <div class="logo-header">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c5/Logo_Conselho_Tutelar_Brasil.png/240px-Logo_Conselho_Tutelar_Brasil.png" alt="Logo Conselho Tutelar">
     </div>
+    <div class="titulo-ctpar">SISTEMA CTPAR</div>
 
     <button class="tab-btn active-tab" onclick="mostrar('cadastro')">CADASTRO</button>
     <button class="tab-btn" onclick="mostrar('pesquisa')">PESQUISAR</button>
