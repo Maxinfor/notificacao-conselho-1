@@ -13,8 +13,10 @@
         input { text-transform: uppercase; width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; margin-bottom: 10px; }
         .view { display: none; margin-top: 20px; }
         .active-view { display: block; }
-        .item-lista { padding: 12px; border-bottom: 1px solid #eee; font-size: 14px; background: #fafafa; margin-bottom: 5px; border-radius: 4px; }
-        .btn-acao { width: 100%; padding: 12px; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; margin-top: 5px; color: white; }
+        .item-lista { padding: 12px; border-bottom: 2px solid #ddd; font-size: 14px; background: #fff; margin-bottom: 10px; border-radius: 8px; }
+        .btn-acao { width: 100%; padding: 10px; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; margin-top: 5px; color: white; }
+        .status-pendente { color: orange; font-weight: bold; }
+        .status-confirmado { color: green; font-weight: bold; }
     </style>
 </head>
 <body>
@@ -23,6 +25,7 @@
     <button class="tab-btn active-tab" onclick="mostrar('cadastro')">CADASTRO</button>
     <button class="tab-btn" onclick="mostrar('pesquisa')">PESQUISAR</button>
 
+    <!-- TELA CADASTRO -->
     <div id="cadastro" class="view active-view">
         <h3 style="text-align:center;">NOVA NOTIFICAÇÃO</h3>
         <input type="text" id="resp" placeholder="RESPONSÁVEL">
@@ -32,13 +35,13 @@
         <input type="text" id="conselheiro" placeholder="CONSELHEIRO(A)">
         <input type="tel" id="telefone" placeholder="TELEFONE (DDD+NUMERO)">
         
-        <button class="btn-acao" style="background: #25D366;" onclick="enviarNotificacao()">ENVIAR NOTIFICAÇÃO (WHATSAPP)</button>
-        <button class="btn-acao" style="background: #007bff;" onclick="salvarDados()">SALVAR NO SISTEMA</button>
+        <button class="btn-acao" style="background: #25D366;" onclick="salvarENotificar()">SALVAR E NOTIFICAR RESPONSÁVEL</button>
     </div>
 
+    <!-- TELA PESQUISA -->
     <div id="pesquisa" class="view">
-        <h3 style="text-align:center;">BUSCAR ATENDIMENTOS</h3>
-        <input type="text" id="inputBusca" placeholder="DIGITE O NOME DO RESPONSÁVEL..." onkeyup="filtrarLista()">
+        <h3 style="text-align:center;">GESTÃO DE CONFIRMAÇÕES</h3>
+        <input type="text" id="inputBusca" placeholder="BUSCAR POR NOME..." onkeyup="filtrarLista()">
         <div id="listaResultados"></div>
     </div>
 </div>
@@ -53,28 +56,40 @@
         event.target.classList.add('active-tab');
     }
 
-    function salvarDados() {
+    function salvarENotificar() {
         const novo = {
+            id: Date.now(), // ID único para controle
             resp: document.getElementById('resp').value,
             crianca: document.getElementById('crianca').value,
             data: document.getElementById('data').value,
             hora: document.getElementById('horario').value,
             conselheiro: document.getElementById('conselheiro').value,
-            tel: document.getElementById('telefone').value
+            tel: document.getElementById('telefone').value,
+            status: 'PENDENTE'
         };
+        
+        // Disparar WhatsApp
+        const dataF = novo.data.split('-').reverse().join('/');
+        const msg = `BOM DIA, AQUI É O CONSELHO TUTELAR. VOCÊ ESTÁ SENDO NOTIFICADO(A) A COMPARECER NO DIA ${dataF} ÀS ${novo.hora}.`;
+        window.open(`https://api.whatsapp.com/send?phone=55${novo.tel.replace(/\D/g, '')}&text=${encodeURIComponent(msg)}`, '_blank');
+        
         bancoDados.push(novo);
         localStorage.setItem('atendimentos', JSON.stringify(bancoDados));
-        alert("SALVO COM SUCESSO!");
-        // Limpa campos
+        alert("SALVO E NOTIFICAÇÃO ENVIADA!");
         document.querySelectorAll('input').forEach(i => i.value = '');
     }
 
-    function enviarNotificacao() {
-        const resp = document.getElementById('resp').value;
-        const tel = document.getElementById('telefone').value.replace(/\D/g, '');
-        const data = document.getElementById('data').value.split('-').reverse().join('/');
-        const msg = `BOM DIA, AQUI É O CONSELHO TUTELAR. VOCÊ ESTÁ SENDO NOTIFICADO(A) A COMPARECER NO DIA ${data} ÀS ${document.getElementById('horario').value}.`;
-        window.open(`https://api.whatsapp.com/send?phone=55${tel}&text=${encodeURIComponent(msg)}`, '_blank');
+    function confirmarAoConselheiro(id) {
+        const item = bancoDados.find(i => i.id === id);
+        const dataF = item.data.split('-').reverse().join('/');
+        const msg = `OLÁ ${item.conselheiro}, A PRESENÇA DO RESPONSÁVEL ${item.resp} PARA O ATENDIMENTO DO DIA ${dataF} ÀS ${item.hora} FOI CONFIRMADA.`;
+        
+        window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(msg)}`, '_blank');
+        
+        // Atualizar status no sistema
+        item.status = 'CONFIRMADO';
+        localStorage.setItem('atendimentos', JSON.stringify(bancoDados));
+        filtrarLista();
     }
 
     function filtrarLista() {
@@ -83,14 +98,22 @@
         lista.innerHTML = '';
         
         bancoDados.filter(item => item.resp.toUpperCase().includes(busca)).forEach(item => {
+            const btnHtml = item.status === 'PENDENTE' 
+                ? `<button class="btn-acao" style="background:#007bff" onclick="confirmarAoConselheiro(${item.id})">CONFIRMAR AO CONSELHEIRO</button>`
+                : `<span class="status-confirmado">✔ CONFIRMADO AO CONSELHEIRO</span>`;
+
             lista.innerHTML += `<div class="item-lista">
                 <strong>RESP: ${item.resp}</strong><br>
                 CRIANÇA: ${item.crianca || 'N/A'}<br>
-                DATA: ${item.data} | HORA: ${item.hora}<br>
-                CONSELHEIRO: ${item.conselheiro}
+                DATA: ${item.data.split('-').reverse().join('/')} | HORA: ${item.hora}<br>
+                STATUS: <span class="${item.status === 'PENDENTE' ? 'status-pendente' : 'status-confirmado'}">${item.status}</span><br>
+                ${btnHtml}
             </div>`;
         });
     }
+    
+    // Inicializar lista
+    filtrarLista();
 </script>
 
 </body>
