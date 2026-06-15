@@ -9,21 +9,51 @@
     <link rel="apple-touch-icon" href="https://googleusercontent.com/image_generation_content/1">
     
     <style>
-        body { font-family: 'Segoe UI', Arial, sans-serif; background-color: #f4f6f9; padding: 15px; margin: 0; }
-        .container { background-color: #fff; padding: 20px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); max-width: 450px; margin: auto; }
+        /* Estilos Globais e Reset */
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', Arial, sans-serif; background-color: #f4f6f9; padding: 20px; color: #333; display: flex; justify-content: center; align-items: start; min-height: 100vh; }
         
-        .titulo-ctpar { text-align: center; color: #007bff; margin: 10px 0 20px 0; font-weight: bold; font-size: 22px; }
+        /* Layout Adaptável (Celular e Computador) */
+        .container { background-color: #fff; padding: 30px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.08); width: 100%; max-width: 600px; margin: auto; transition: max-width 0.3s ease; }
+        
+        /* Quando aberto no Computador, expande um pouco mais para melhor aproveitamento de tela */
+        @media (min-width: 768px) {
+            .container { max-width: 700px; padding: 40px; }
+        }
+        
+        .titulo-ctpar { text-align: center; color: #007bff; margin-bottom: 25px; font-weight: bold; font-size: 24px; letter-spacing: 0.5px; }
 
-        .tabs { display: flex; justify-content: space-between; margin-bottom: 15px; }
-        .tab-btn { width: 48%; padding: 10px; cursor: pointer; border: none; border-radius: 6px; background: #e0e0e0; font-weight: bold; }
+        /* Abas de Navegação */
+        .tabs { display: flex; justify-content: space-between; margin-bottom: 25px; gap: 10px; }
+        .tab-btn { flex: 1; padding: 12px; cursor: pointer; border: none; border-radius: 6px; background: #e0e0e0; font-weight: bold; font-size: 14px; transition: background 0.2s, color 0.2s; }
+        .tab-btn:hover { background: #d5d5d5; }
         .active-tab { background: #007bff; color: white; }
-        input, select { text-transform: uppercase; width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; margin-bottom: 10px; font-family: inherit; }
-        .view { display: none; margin-top: 20px; }
-        .active-view { display: block; }
-        .item-lista { padding: 12px; border-bottom: 2px solid #ddd; font-size: 14px; background: #fff; margin-bottom: 10px; border-radius: 8px; }
-        .btn-acao { width: 100%; padding: 10px; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; margin-top: 5px; color: white; }
-        .status-pendente { color: orange; font-weight: bold; }
-        .status-confirmado { color: green; font-weight: bold; }
+        .active-tab:hover { background: #0069d9; }
+
+        /* Formulários e Inputs */
+        label { display: block; margin-bottom: 5px; font-weight: 600; font-size: 13px; color: #555; }
+        input, select { text-transform: uppercase; width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; margin-bottom: 15px; font-family: inherit; font-size: 15px; background-color: #fdfdfd; transition: border-color 0.2s; }
+        input:focus, select:focus { border-color: #007bff; outline: none; background-color: #fff; }
+        input[type="date"], input[type="time"] { text-transform: none; } /* Mantém formato padrão de data/hora */
+
+        /* Visualizações (Views) */
+        .view { display: none; }
+        .active-view { display: block; animation: fadeIn 0.3s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+        
+        .view h3 { text-align: center; margin-bottom: 20px; color: #444; font-size: 18px; }
+
+        /* Lista de Resultados na Pesquisa */
+        #listaResultados { margin-top: 15px; display: flex; flex-direction: column; gap: 12px; }
+        .item-lista { padding: 15px; border: 1px solid #e2e8f0; font-size: 15px; background: #fafafa; border-radius: 8px; line-height: 1.6; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
+        
+        /* Botões de Ação */
+        .btn-acao { width: 100%; padding: 12px; border: none; border-radius: 6px; font-weight: bold; font-size: 15px; cursor: pointer; margin-top: 5px; color: white; transition: opacity 0.2s; }
+        .btn-acao:hover { opacity: 0.9; }
+        
+        /* Status */
+        .status-pendente { color: #f39c12; font-weight: bold; }
+        .status-confirmado { color: #27ae60; font-weight: bold; display: inline-block; margin-top: 8px; }
     </style>
 </head>
 <body>
@@ -37,12 +67,21 @@
     </div>
 
     <div id="cadastro" class="view active-view">
-        <h3 style="text-align:center;">NOVA NOTIFICAÇÃO</h3>
-        <input type="text" id="resp" placeholder="NOME DO RESPONSÁVEL">
-        <input type="text" id="crianca" placeholder="NOME DA CRIANÇA/ADOLESCENTE">
+        <h3>NOVA NOTIFICAÇÃO</h3>
+        
+        <label for="resp">Nome do Responsável</label>
+        <input type="text" id="resp" placeholder="Ex: JOÃO SILVA">
+        
+        <label for="crianca">Nome da Criança/Adolescente</label>
+        <input type="text" id="crianca" placeholder="Ex: PEDRO SILVA">
+        
+        <label for="data">Data do Atendimento</label>
         <input type="date" id="data">
+        
+        <label for="horario">Horário</label>
         <input type="time" id="horario">
         
+        <label for="conselheiro">Conselheiro(a) Tutelar</label>
         <select id="conselheiro">
             <option value="" disabled selected>SELECIONE O(A) CONSELHEIRO(A)</option>
             <option value="CLÁUDIA">CLÁUDIA</option>
@@ -52,37 +91,49 @@
             <option value="SANDRA">SANDRA</option>
         </select>
         
-        <input type="tel" id="telefone" placeholder="TELEFONE DO RESPONSÁVEL (DDD+NÚMERO)">
+        <label for="telefone">Telefone do Responsável</label>
+        <input type="tel" id="telefone" placeholder="DDD + NÚMERO (SÓ NÚMEROS)">
         
         <button class="btn-acao" style="background: #25D366;" onclick="salvarENotificar()">SALVAR E NOTIFICAR</button>
     </div>
 
     <div id="pesquisa" class="view">
-        <h3 style="text-align:center;">GESTÃO DE CONFIRMAÇÕES</h3>
-        <input type="text" id="inputBusca" placeholder="BUSCAR POR NOME..." onkeyup="filtrarLista()">
+        <h3>GESTÃO DE CONFIRMAÇÕES</h3>
+        <label for="inputBusca">Filtrar Atendimentos</label>
+        <input type="text" id="inputBusca" placeholder="BUSCAR POR NOME DO RESPONSÁVEL OU CRIANÇA..." onkeyup="filtrarLista()">
         <div id="listaResultados"></div>
     </div>
 </div>
 
 <script>
+    // Inicialização segura do banco de dados local
     let bancoDados = JSON.parse(localStorage.getItem('atendimentos')) || [];
 
+    // Gerenciador de abas
     function mostrar(id) {
         document.querySelectorAll('.view').forEach(v => v.classList.remove('active-view'));
         document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active-tab'));
         
-        document.getElementById(id).classList.add('active-view');
-        document.getElementById('btn-' + id).classList.add('active-tab');
+        const viewAlvo = document.getElementById(id);
+        const btnAlvo = document.getElementById('btn-' + id);
+        
+        if (viewAlvo && btnAlvo) {
+            viewAlvo.classList.add('active-view');
+            btnAlvo.classList.add('active-tab');
+        }
     }
 
+    // Salvar Registro e Abrir WhatsApp
     function salvarENotificar() {
-        const respInput = document.getElementById('resp').value;
-        const criancaInput = document.getElementById('crianca').value;
+        const respInput = document.getElementById('resp').value.trim();
+        const criancaInput = document.getElementById('crianca').value.trim();
         const dataInput = document.getElementById('data').value;
         const horaInput = document.getElementById('horario').value;
-        const conselheiroInput = document.getElementById('conselheiro').value;
-        const telInput = document.getElementById('telefone').value;
+        const conselheiroSelect = document.getElementById('conselheiro');
+        const conselheiroInput = conselheiroSelect ? conselheiroSelect.value : "";
+        const telInput = document.getElementById('telefone').value.trim();
 
+        // Validação rigorosa dos campos
         if(!respInput || !criancaInput || !dataInput || !horaInput || !conselheiroInput || !telInput) {
             alert("Por favor, preencha todos os campos obrigatórios para gerar a notificação.");
             return;
@@ -110,16 +161,17 @@
             },
             body: JSON.stringify(novo)
         })
-        .then(() => console.log("Dados enviados para o Google Sheets."))
-        .catch(err => console.error("Erro ao enviar para o Google Sheets:", err));
+        .then(() => console.log("Dados enviados com sucesso para o Google Sheets."))
+        .catch(err => console.error("Erro técnico ao enviar para o Google Sheets:", err));
         // --------------------------------------------
         
+        // Formatação da data (de AAAA-MM-DD para DD/MM/AAAA)
         const dataF = novo.data ? novo.data.split('-').reverse().join('/') : "";
         
+        // Saudação automática baseada na hora informada
         let saudacao = "Olá!";
         if (novo.hora) {
             const horaInteira = parseInt(novo.hora.split(':')[0], 10);
-            
             if (horaInteira >= 0 && horaInteira < 12) {
                 saudacao = "Bom dia!";
             } else if (horaInteira >= 12 && horaInteira < 18) {
@@ -129,6 +181,7 @@
             }
         }
         
+        // Texto da Notificação Oficial (WhatsApp)
         const msg = `${saudacao}\n\n` +
                     `O Conselho Tutelar do Paranoá solicita o comparecimento do(a) Sr.(a) *${novo.resp}*, responsável pela criança/adolescente *${novo.crianca}*, para tratar de assunto pertinente ao acompanhamento e à garantia dos direitos da criança/adolescente.\n\n` +
                     `Solicitamos que Vossa Senhoria compareça à sede deste Conselho Tutelar no dia *${dataF}*, às *${novo.hora}h*, ocasião em que será atendido(a) pelo(a) Conselheiro(a) Tutelar *${novo.conselheiro}*.\n\n` +
@@ -141,12 +194,15 @@
                     `Solicitamos a gentileza de confirmar o recebimento desta convocação.\n\n` +
                     `_Observação: O não comparecimento injustificado poderá ensejar a adoção das medidas cabíveis previstas no Estatuto da Criança e do Adolescente – ECA, inclusive aquelas constantes dos artigos 236 e 249 da Lei nº 8.069/1990._`;
 
+        // Disparo limpo do WhatsApp funcionando em Computador (WhatsApp Web) ou Celular (App)
         window.open(`https://api.whatsapp.com/send?phone=55${novo.tel.replace(/\D/g, '')}&text=${encodeURIComponent(msg)}`, '_blank');
         
+        // Salva localmente e atualiza tela
         bancoDados.push(novo);
         localStorage.setItem('atendimentos', JSON.stringify(bancoDados));
-        alert("Notificação salva e enviada para o WhatsApp!");
+        alert("Notificação salva e redirecionada para o WhatsApp!");
         
+        // Reseta os campos do formulário
         document.getElementById('resp').value = '';
         document.getElementById('crianca').value = '';
         document.getElementById('data').value = '';
@@ -157,28 +213,14 @@
         filtrarLista();
     }
 
+    // Função de Confirmação Direta ao Conselheiro
     function confirmarAoConselheiro(id) {
         const item = bancoDados.find(i => i.id === id);
         if (!item) return;
 
         const dataF = item.data ? item.data.split('-').reverse().join('/') : '';
         
+        // Mensagem exata e padronizada requisitada
         const msg = `Olá ${item.conselheiro}, a presença de ${item.resp} para o atendimento do dia ${dataF} às ${item.hora} foi CONFIRMADA.`;
         
-        window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(msg)}`, '_blank');
-        item.status = 'CONFIRMADO';
-        localStorage.setItem('atendimentos', JSON.stringify(bancoDados));
-        filtrarLista();
-    }
-
-    function filtrarLista() {
-        const buscaInput = document.getElementById('inputBusca');
-        const busca = buscaInput ? buscaInput.value.toUpperCase() : '';
-        const lista = document.getElementById('listaResultados');
-        if (!lista) return;
-
-        lista.innerHTML = '';
-        
-        bancoDados.filter(item => {
-            const respMatch = item.resp ? item.resp.includes(busca) : false;
-            const criancaMatch = item.crianca ? item.crianca.includes(busca) : false
+        window.open(`
