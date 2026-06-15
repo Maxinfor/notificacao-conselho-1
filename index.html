@@ -5,6 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SISTEMA CTPAR</title>
     
+    <link rel="icon" type="image/png" href="https://cdn-icons-png.flaticon.com/512/4310/4310156.png">
+    <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/4310/4310156.png">
+    
     <style>
         body { font-family: 'Segoe UI', Arial, sans-serif; background-color: #f4f6f9; padding: 15px; margin: 0; }
         .container { background-color: #fff; padding: 20px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); max-width: 450px; margin: auto; }
@@ -160,7 +163,6 @@
 
         const dataF = item.data ? item.data.split('-').reverse().join('/') : '';
         
-        // Frase padrão corrigida perfeitamente aqui:
         const msg = `Olá ${item.conselheiro}, a presença de ${item.resp} para o atendimento do dia ${dataF} às ${item.hora} foi CONFIRMADA.`;
         
         window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(msg)}`, '_blank');
