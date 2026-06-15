@@ -5,8 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SISTEMA CTPAR</title>
     
-    <link rel="icon" type="image/png" href="https://cdn-icons-png.flaticon.com/512/4310/4310156.png">
-    <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/4310/4310156.png">
+    <link rel="icon" type="image/jpeg" href="https://googleusercontent.com/image_generation_content/1">
+    <link rel="apple-touch-icon" href="https://googleusercontent.com/image_generation_content/1">
     
     <style>
         body { font-family: 'Segoe UI', Arial, sans-serif; background-color: #f4f6f9; padding: 15px; margin: 0; }
@@ -181,27 +181,4 @@
         
         bancoDados.filter(item => {
             const respMatch = item.resp ? item.resp.includes(busca) : false;
-            const criancaMatch = item.crianca ? item.crianca.includes(busca) : false;
-            return respMatch || criancaMatch;
-        }).forEach(item => {
-            const btnHtml = item.status === 'PENDENTE' 
-                ? `<button class="btn-acao" style="background:#007bff" onclick="confirmarAoConselheiro(${item.id})">CONFIRMAR AO CONSELHEIRO</button>`
-                : `<span class="status-confirmado">✔ CONFIRMADO AO CONSELHEIRO</span>`;
-
-            const dataExibicao = item.data ? item.data.split('-').reverse().join('/') : '';
-
-            lista.innerHTML += `<div class="item-lista">
-                <strong>RESP: ${item.resp || ''}</strong><br>
-                CRIANÇA: ${item.crianca || ''}<br>
-                DATA: ${dataExibicao} | HORA: ${item.hora || ''}<br>
-                STATUS: <span class="${item.status === 'PENDENTE' ? 'status-pendente' : 'status-confirmado'}">${item.status}</span><br>
-                ${btnHtml}
-            </div>`;
-        });
-    }
-    
-    filtrarLista();
-</script>
-
-</body>
-</html>
+            const criancaMatch = item.crianca ? item.crianca.includes(busca) : false
