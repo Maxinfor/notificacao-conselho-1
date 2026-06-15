@@ -5,53 +5,40 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SISTEMA CTPAR</title>
     
-    <link rel="icon" type="image/jpeg" href="https://googleusercontent.com/image_generation_content/1">
-    <link rel="apple-touch-icon" href="https://googleusercontent.com/image_generation_content/1">
+    <link rel="icon" type="image/png" href="https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f3e1.png">
+    <link rel="apple-touch-icon" href="https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f3e1.png">
     
     <style>
-        /* Estilos Globais e Reset */
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body { font-family: 'Segoe UI', Arial, sans-serif; background-color: #f4f6f9; padding: 20px; color: #333; display: flex; justify-content: center; align-items: start; min-height: 100vh; }
         
-        /* Layout Adaptável (Celular e Computador) */
-        .container { background-color: #fff; padding: 30px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.08); width: 100%; max-width: 600px; margin: auto; transition: max-width 0.3s ease; }
+        .container { background-color: #fff; padding: 30px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.08); width: 100%; max-width: 600px; margin: auto; }
         
-        /* Quando aberto no Computador, expande um pouco mais para melhor aproveitamento de tela */
         @media (min-width: 768px) {
             .container { max-width: 700px; padding: 40px; }
         }
         
         .titulo-ctpar { text-align: center; color: #007bff; margin-bottom: 25px; font-weight: bold; font-size: 24px; letter-spacing: 0.5px; }
 
-        /* Abas de Navegação */
         .tabs { display: flex; justify-content: space-between; margin-bottom: 25px; gap: 10px; }
-        .tab-btn { flex: 1; padding: 12px; cursor: pointer; border: none; border-radius: 6px; background: #e0e0e0; font-weight: bold; font-size: 14px; transition: background 0.2s, color 0.2s; }
-        .tab-btn:hover { background: #d5d5d5; }
+        .tab-btn { flex: 1; padding: 12px; cursor: pointer; border: none; border-radius: 6px; background: #e0e0e0; font-weight: bold; font-size: 14px; text-align: center; }
         .active-tab { background: #007bff; color: white; }
-        .active-tab:hover { background: #0069d9; }
 
-        /* Formulários e Inputs */
         label { display: block; margin-bottom: 5px; font-weight: 600; font-size: 13px; color: #555; }
-        input, select { text-transform: uppercase; width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; margin-bottom: 15px; font-family: inherit; font-size: 15px; background-color: #fdfdfd; transition: border-color 0.2s; }
+        input, select { text-transform: uppercase; width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; margin-bottom: 15px; font-family: inherit; font-size: 15px; background-color: #fdfdfd; }
         input:focus, select:focus { border-color: #007bff; outline: none; background-color: #fff; }
-        input[type="date"], input[type="time"] { text-transform: none; } /* Mantém formato padrão de data/hora */
+        input[type="date"], input[type="time"] { text-transform: none; }
 
-        /* Visualizações (Views) */
         .view { display: none; }
-        .active-view { display: block; animation: fadeIn 0.3s ease; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+        .active-view { display: block; }
         
         .view h3 { text-align: center; margin-bottom: 20px; color: #444; font-size: 18px; }
 
-        /* Lista de Resultados na Pesquisa */
         #listaResultados { margin-top: 15px; display: flex; flex-direction: column; gap: 12px; }
-        .item-lista { padding: 15px; border: 1px solid #e2e8f0; font-size: 15px; background: #fafafa; border-radius: 8px; line-height: 1.6; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
+        .item-lista { padding: 15px; border: 1px solid #e2e8f0; font-size: 15px; background: #fafafa; border-radius: 8px; line-height: 1.6; }
         
-        /* Botões de Ação */
-        .btn-acao { width: 100%; padding: 12px; border: none; border-radius: 6px; font-weight: bold; font-size: 15px; cursor: pointer; margin-top: 5px; color: white; transition: opacity 0.2s; }
-        .btn-acao:hover { opacity: 0.9; }
+        .btn-acao { width: 100%; padding: 12px; border: none; border-radius: 6px; font-weight: bold; font-size: 15px; cursor: pointer; margin-top: 5px; color: white; text-align: center; }
         
-        /* Status */
         .status-pendente { color: #f39c12; font-weight: bold; }
         .status-confirmado { color: #27ae60; font-weight: bold; display: inline-block; margin-top: 8px; }
     </style>
@@ -106,10 +93,15 @@
 </div>
 
 <script>
-    // Inicialização segura do banco de dados local
-    let bancoDados = JSON.parse(localStorage.getItem('atendimentos')) || [];
+    // Carrega o banco de dados local com segurança
+    let bancoDados = [];
+    try {
+        bancoDados = JSON.parse(localStorage.getItem('atendimentos')) || [];
+    } catch (e) {
+        bancoDados = [];
+    }
 
-    // Gerenciador de abas
+    // Alternar entre Cadastro e Pesquisa
     function mostrar(id) {
         document.querySelectorAll('.view').forEach(v => v.classList.remove('active-view'));
         document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active-tab'));
@@ -123,7 +115,7 @@
         }
     }
 
-    // Salvar Registro e Abrir WhatsApp
+    // Gravar Dados e Disparar Mensagem
     function salvarENotificar() {
         const respInput = document.getElementById('resp').value.trim();
         const criancaInput = document.getElementById('crianca').value.trim();
@@ -133,7 +125,6 @@
         const conselheiroInput = conselheiroSelect ? conselheiroSelect.value : "";
         const telInput = document.getElementById('telefone').value.trim();
 
-        // Validação rigorosa dos campos
         if(!respInput || !criancaInput || !dataInput || !horaInput || !conselheiroInput || !telInput) {
             alert("Por favor, preencha todos os campos obrigatórios para gerar a notificação.");
             return;
@@ -161,14 +152,11 @@
             },
             body: JSON.stringify(novo)
         })
-        .then(() => console.log("Dados enviados com sucesso para o Google Sheets."))
-        .catch(err => console.error("Erro técnico ao enviar para o Google Sheets:", err));
-        // --------------------------------------------
+        .then(() => console.log("Dados enviados para o Google Sheets."))
+        .catch(err => console.error("Erro na integração da planilha:", err));
         
-        // Formatação da data (de AAAA-MM-DD para DD/MM/AAAA)
         const dataF = novo.data ? novo.data.split('-').reverse().join('/') : "";
         
-        // Saudação automática baseada na hora informada
         let saudacao = "Olá!";
         if (novo.hora) {
             const horaInteira = parseInt(novo.hora.split(':')[0], 10);
@@ -181,7 +169,6 @@
             }
         }
         
-        // Texto da Notificação Oficial (WhatsApp)
         const msg = `${saudacao}\n\n` +
                     `O Conselho Tutelar do Paranoá solicita o comparecimento do(a) Sr.(a) *${novo.resp}*, responsável pela criança/adolescente *${novo.crianca}*, para tratar de assunto pertinente ao acompanhamento e à garantia dos direitos da criança/adolescente.\n\n` +
                     `Solicitamos que Vossa Senhoria compareça à sede deste Conselho Tutelar no dia *${dataF}*, às *${novo.hora}h*, ocasião em que será atendido(a) pelo(a) Conselheiro(a) Tutelar *${novo.conselheiro}*.\n\n` +
@@ -194,13 +181,11 @@
                     `Solicitamos a gentileza de confirmar o recebimento desta convocação.\n\n` +
                     `_Observação: O não comparecimento injustificado poderá ensejar a adoção das medidas cabíveis previstas no Estatuto da Criança e do Adolescente – ECA, inclusive aquelas constantes dos artigos 236 e 249 da Lei nº 8.069/1990._`;
 
-        // Disparo limpo do WhatsApp funcionando em Computador (WhatsApp Web) ou Celular (App)
         window.open(`https://api.whatsapp.com/send?phone=55${novo.tel.replace(/\D/g, '')}&text=${encodeURIComponent(msg)}`, '_blank');
         
-        // Salva localmente e atualiza tela
         bancoDados.push(novo);
         localStorage.setItem('atendimentos', JSON.stringify(bancoDados));
-        alert("Notificação salva e redirecionada para o WhatsApp!");
+        alert("Notificação salva com sucesso!");
         
         // Reseta os campos do formulário
         document.getElementById('resp').value = '';
@@ -213,14 +198,61 @@
         filtrarLista();
     }
 
-    // Função de Confirmação Direta ao Conselheiro
+    // Confirmação Direta ao Conselheiro via WhatsApp
     function confirmarAoConselheiro(id) {
         const item = bancoDados.find(i => i.id === id);
         if (!item) return;
 
         const dataF = item.data ? item.data.split('-').reverse().join('/') : '';
-        
-        // Mensagem exata e padronizada requisitada
         const msg = `Olá ${item.conselheiro}, a presença de ${item.resp} para o atendimento do dia ${dataF} às ${item.hora} foi CONFIRMADA.`;
         
-        window.open(`
+        window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(msg)}`, '_blank');
+        
+        item.status = 'CONFIRMADO';
+        localStorage.setItem('atendimentos', JSON.stringify(bancoDados));
+        filtrarLista();
+    }
+
+    // Filtra e reconstrói a lista na tela
+    function filtrarLista() {
+        const buscaInput = document.getElementById('inputBusca');
+        const busca = buscaInput ? buscaInput.value.trim().toUpperCase() : '';
+        const lista = document.getElementById('listaResultados');
+        if (!lista) return;
+
+        lista.innerHTML = '';
+        
+        const registrosFiltrados = bancoDados.filter(item => {
+            const respMatch = item.resp ? item.resp.includes(busca) : false;
+            const criancaMatch = item.crianca ? item.crianca.includes(busca) : false;
+            return respMatch || criancaMatch;
+        });
+
+        if (registrosFiltrados.length === 0) {
+            lista.innerHTML = `<p style="text-align:center; color:#888; font-size:14px; margin-top:10px;">Nenhum atendimento cadastrado.</p>`;
+            return;
+        }
+
+        registrosFiltrados.forEach(item => {
+            const btnHtml = item.status === 'PENDENTE' 
+                ? `<button class="btn-acao" style="background:#007bff" onclick="confirmarAoConselheiro(${item.id})">CONFIRMAR AO CONSELHEIRO</button>`
+                : `<span class="status-confirmado">✔ CONFIRMADO AO CONSELHEIRO</span>`;
+
+            const dataExibicao = item.data ? item.data.split('-').reverse().join('/') : '';
+
+            lista.innerHTML += `<div class="item-lista">
+                <strong>RESPONSÁVEL:</strong> ${item.resp || ''}<br>
+                <strong>CRIANÇA/ADOLESCENTE:</strong> ${item.crianca || ''}<br>
+                <strong>DATA:</strong> ${dataExibicao} | <strong>HORA:</strong> ${item.hora || ''}h<br>
+                <strong>STATUS:</strong> <span class="${item.status === 'PENDENTE' ? 'status-pendente' : 'status-confirmado'}">${item.status}</span><br>
+                ${btnHtml}
+            </div>`;
+        });
+    }
+    
+    // Roda a verificação de lista assim que o site abre
+    filtrarLista();
+</script>
+
+</body>
+</html>
