@@ -96,9 +96,23 @@
             status: 'PENDENTE'
         };
         
+        // --- ENVIO DOS DADOS PARA O GOOGLE SHEETS ---
+        const urlPlanilha = "https://script.google.com/macros/s/AKfycbwubY-gNDKarQmaj1Tsnz9eLtcgNlQrcfjn7VFhPGHvgf45pYCeS243ihxzhP4YGg3h/exec";
+
+        fetch(urlPlanilha, {
+            method: 'POST',
+            mode: 'no-cors',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(novo)
+        })
+        .then(() => console.log("Dados enviados para o Google Sheets."))
+        .catch(err => console.error("Erro ao enviar para o Google Sheets:", err));
+        // --------------------------------------------
+        
         const dataF = novo.data ? novo.data.split('-').reverse().join('/') : "";
         
-        // Lógica para definir a saudação com base no horário preenchido
         let saudacao = "Olá!";
         if (novo.hora) {
             const horaInteira = parseInt(novo.hora.split(':')[0], 10);
@@ -112,7 +126,6 @@
             }
         }
         
-        // Texto oficial adaptado dinamicamente com a saudação automática
         const msg = `${saudacao}\n\n` +
                     `O Conselho Tutelar do Paranoá solicita o comparecimento do(a) Sr.(a) *${novo.resp}*, responsável pela criança/adolescente *${novo.crianca}*, para tratar de assunto pertinente ao acompanhamento e à garantia dos direitos da criança/adolescente.\n\n` +
                     `Solicitamos que Vossa Senhoria compareça à sede deste Conselho Tutelar no dia *${dataF}*, às *${novo.hora}h*, ocasião em que será atendido(a) pelo(a) Conselheiro(a) Tutelar *${novo.conselheiro}*.\n\n` +
@@ -125,19 +138,17 @@
                     `Solicitamos a gentileza de confirmar o recebimento desta convocação.\n\n` +
                     `_Observação: O não comparecimento injustificado poderá ensejar a adoção das medidas cabíveis previstas no Estatuto da Criança e do Adolescente – ECA, inclusive aquelas constantes dos artigos 236 e 249 da Lei nº 8.069/1990._`;
 
-        // Abre o WhatsApp com a mensagem estruturada
         window.open(`https://api.whatsapp.com/send?phone=55${novo.tel.replace(/\D/g, '')}&text=${encodeURIComponent(msg)}`, '_blank');
         
         bancoDados.push(novo);
         localStorage.setItem('atendimentos', JSON.stringify(bancoDados));
         alert("Notificação salva e enviada para o WhatsApp!");
         
-        // Limpar campos de forma segura
         document.getElementById('resp').value = '';
         document.getElementById('crianca').value = '';
         document.getElementById('data').value = '';
         document.getElementById('horario').value = '';
-        document.getElementById('conselheiro').selectedIndex = 0; // Volta para a opção inicial vazia
+        document.getElementById('conselheiro').selectedIndex = 0;
         document.getElementById('telefone').value = '';
 
         filtrarLista();
@@ -185,7 +196,6 @@
         });
     }
     
-    // Executa a listagem inicial
     filtrarLista();
 </script>
 
