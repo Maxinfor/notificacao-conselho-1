@@ -156,4 +156,50 @@
 
     function confirmarAoConselheiro(id) {
         const item = bancoDados.find(i => i.id === id);
-        if (!item)
+        if (!item) return;
+
+        const dataF = item.data ? item.data.split('-').reverse().join('/') : '';
+        
+        // Frase padrão corrigida perfeitamente aqui:
+        const msg = `Olá ${item.conselheiro}, a presença de ${item.resp} para o atendimento do dia ${dataF} às ${item.hora} foi CONFIRMADA.`;
+        
+        window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(msg)}`, '_blank');
+        item.status = 'CONFIRMADO';
+        localStorage.setItem('atendimentos', JSON.stringify(bancoDados));
+        filtrarLista();
+    }
+
+    function filtrarLista() {
+        const buscaInput = document.getElementById('inputBusca');
+        const busca = buscaInput ? buscaInput.value.toUpperCase() : '';
+        const lista = document.getElementById('listaResultados');
+        if (!lista) return;
+
+        lista.innerHTML = '';
+        
+        bancoDados.filter(item => {
+            const respMatch = item.resp ? item.resp.includes(busca) : false;
+            const criancaMatch = item.crianca ? item.crianca.includes(busca) : false;
+            return respMatch || criancaMatch;
+        }).forEach(item => {
+            const btnHtml = item.status === 'PENDENTE' 
+                ? `<button class="btn-acao" style="background:#007bff" onclick="confirmarAoConselheiro(${item.id})">CONFIRMAR AO CONSELHEIRO</button>`
+                : `<span class="status-confirmado">✔ CONFIRMADO AO CONSELHEIRO</span>`;
+
+            const dataExibicao = item.data ? item.data.split('-').reverse().join('/') : '';
+
+            lista.innerHTML += `<div class="item-lista">
+                <strong>RESP: ${item.resp || ''}</strong><br>
+                CRIANÇA: ${item.crianca || ''}<br>
+                DATA: ${dataExibicao} | HORA: ${item.hora || ''}<br>
+                STATUS: <span class="${item.status === 'PENDENTE' ? 'status-pendente' : 'status-confirmado'}">${item.status}</span><br>
+                ${btnHtml}
+            </div>`;
+        });
+    }
+    
+    filtrarLista();
+</script>
+
+</body>
+</html>
