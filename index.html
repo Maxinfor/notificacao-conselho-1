@@ -43,12 +43,12 @@
 
     <div id="cadastro" class="view active-view">
         <h3 style="text-align:center;">NOVA NOTIFICAÇÃO</h3>
-        <input type="text" id="resp" placeholder="RESPONSÁVEL">
-        <input type="text" id="crianca" placeholder="CRIANÇA/ADOLESCENTE">
+        <input type="text" id="resp" placeholder="NOME DO RESPONSÁVEL">
+        <input type="text" id="crianca" placeholder="NOME DA CRIANÇA/ADOLESCENTE">
         <input type="date" id="data">
         <input type="time" id="horario">
-        <input type="text" id="conselheiro" placeholder="CONSELHEIRO(A)">
-        <input type="tel" id="telefone" placeholder="TELEFONE DO RESPONSÁVEL (DDD + NÚMERO)">
+        <input type="text" id="conselheiro" placeholder="NOME DO(A) CONSELHEIRO(A)">
+        <input type="tel" id="telefone" placeholder="TELEFONE DO RESPONSÁVEL (DDD+NÚMERO)">
         
         <button class="btn-acao" style="background: #25D366;" onclick="salvarENotificar()">SALVAR E NOTIFICAR</button>
     </div>
@@ -79,70 +79,4 @@
             data: document.getElementById('data').value,
             hora: document.getElementById('horario').value,
             conselheiro: document.getElementById('conselheiro').value.toUpperCase(),
-            tel: document.getElementById('telefone').value,
-            status: 'PENDENTE'
-        };
-
-        if(!novo.resp || !novo.data || !novo.hora || !novo.tel) {
-            alert("Por favor, preencha os campos obrigatórios (Responsável, Data, Hora e Telefone).");
-            return;
-        }
-        
-        const dataF = novo.data ? novo.data.split('-').reverse().join('/') : "";
-        
-        // Mensagem oficial formatada
-        const msg = `Bom dia, como vai? Somos do Conselho Tutelar do Paranoá. Solicitamos a presença do(a) senhor(a) ${novo.resp}, responsável por ${novo.crianca || 'seu(à) filho(a)'}, para esclarecimentos.\n\n` +
-                    `🗓 Data: ${dataF} às ${novo.hora}h\n` +
-                    `📍 Local: Sede do Conselho Tutelar do Paranoá (Área especial Quadra 21, ao lado da UBS 01 do Paranoá)\n` +
-                    `👤 Conselheiro(a): ${novo.conselheiro}\n\n` +
-                    `⚠️ TRAZER DOCUMENTAÇÃO PESSOAL DO RESPONSÁVEL E DA CRIANÇA, E A CRIANÇA/ADOLESCENTE.\n\n` +
-                    `Por favor, confirme o recebimento desta mensagem.\n\n` +
-                    `Obs.: O não comparecimento injustificado constitui crime e infração Administrativa (Arts. 236 e 249 do ECA).`;
-
-        window.open(`https://api.whatsapp.com/send?phone=55${novo.tel.replace(/\D/g, '')}&text=${encodeURIComponent(msg)}`, '_blank');
-        
-        bancoDados.push(novo);
-        localStorage.setItem('atendimentos', JSON.stringify(bancoDados));
-        alert("Notificação salva e redirecionada para o WhatsApp!");
-        
-        // Limpar campos
-        document.querySelectorAll('#cadastro input').forEach(i => i.value = '');
-        filtrarLista();
-    }
-
-    function confirmarAoConselheiro(id) {
-        const item = bancoDados.find(i => i.id === id);
-        const dataF = item.data.split('-').reverse().join('/');
-        const msg = `Olá ${item.conselheiro}, a presença de ${item.resp} (Caso: ${item.crianca || 'N/A'}) para o atendimento do dia ${dataF} às ${item.hora} foi CONFIRMADA.`;
-        
-        window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(msg)}`, '_blank');
-        item.status = 'CONFIRMADO';
-        localStorage.setItem('atendimentos', JSON.stringify(bancoDados));
-        filtrarLista();
-    }
-
-    function filtrarLista() {
-        const busca = document.getElementById('inputBusca').value.toUpperCase();
-        const lista = document.getElementById('listaResultados');
-        lista.innerHTML = '';
-        
-        bancoDados.filter(item => item.resp.includes(busca) || item.crianca.includes(busca)).forEach(item => {
-            const btnHtml = item.status === 'PENDENTE' 
-                ? `<button class="btn-acao" style="background:#007bff" onclick="confirmarAoConselheiro(${item.id})">CONFIRMAR AO CONSELHEIRO</button>`
-                : `<span class="status-confirmado">✔ CONFIRMADO AO CONSELHEIRO</span>`;
-
-            lista.innerHTML += `<div class="item-lista">
-                <strong>RESP: ${item.resp}</strong><br>
-                CRIANÇA: ${item.crianca || 'N/A'}<br>
-                DATA: ${item.data ? item.data.split('-').reverse().join('/') : ''} | HORA: ${item.hora}<br>
-                STATUS: <span class="${item.status === 'PENDENTE' ? 'status-pendente' : 'status-confirmado'}">${item.status}</span><br>
-                ${btnHtml}
-            </div>`;
-        });
-    }
-    
-    filtrarLista();
-</script>
-
-</body>
-</html>
+            tel: document.getElementById('
