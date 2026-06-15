@@ -12,7 +12,6 @@
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body { font-family: 'Segoe UI', Arial, sans-serif; background-color: #f4f6f9; padding: 20px; color: #333; display: flex; justify-content: center; align-items: start; min-height: 100vh; }
         
-        /* Container com tamanho fixo e estável para evitar variações de tamanho */
         .container { background-color: #fff; padding: 30px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.08); width: 100%; max-width: 600px; margin: auto; min-height: 580px; display: flex; flex-direction: column; }
         
         @media (min-width: 768px) {
@@ -35,7 +34,6 @@
         
         .view h3 { text-align: center; margin-bottom: 20px; color: #444; font-size: 18px; }
 
-        /* Lista de Resultados com rolagem interna para não empurrar a tela para baixo */
         #listaResultados { margin-top: 15px; display: flex; flex-direction: column; gap: 12px; max-height: 320px; overflow-y: auto; padding-right: 5px; }
         .item-lista { padding: 15px; border: 1px solid #e2e8f0; font-size: 15px; background: #fafafa; border-radius: 8px; line-height: 1.6; }
         
@@ -89,7 +87,7 @@
     <div id="pesquisa" class="view">
         <h3>GESTÃO DE CONFIRMAÇÕES</h3>
         <label for="inputBusca">Filtrar Atendimentos</label>
-        <input type="text" id="inputBusca" placeholder="BUSCAR POR NOME DO RESPONSÁVEL OU CRIANÇA..." onkeyup="filtrarLista()">
+        <input type="text" id="inputBusca" placeholder="DIGITE QUALQUER DADO DO ATENDIMENTO..." onkeyup="filtrarLista()">
         <div id="listaResultados"></div>
     </div>
 </div>
@@ -210,8 +208,10 @@
         filtrarLista();
     }
 
+    // Filtro Global Avançado (Insensível a Maiúsculas/Minúsculas)
     function filtrarLista() {
         const buscaInput = document.getElementById('inputBusca');
+        // Converte o termo pesquisado para letras maiúsculas para comparação uniforme
         const busca = buscaInput ? buscaInput.value.trim().toUpperCase() : '';
         const lista = document.getElementById('listaResultados');
         if (!lista) return;
@@ -219,9 +219,20 @@
         lista.innerHTML = '';
         
         const registrosFiltrados = bancoDados.filter(item => {
-            const respMatch = item.resp ? item.resp.includes(busca) : false;
-            const criancaMatch = item.crianca ? item.crianca.includes(busca) : false;
-            return respMatch || criancaMatch;
+            const dataF = item.data ? item.data.split('-').reverse().join('/') : '';
+            
+            // Reúne todas as propriedades do cartão em um único texto para pesquisa global
+            const conteudoCartao = `
+                ${item.resp || ''} 
+                ${item.crianca || ''} 
+                ${item.conselheiro || ''} 
+                ${item.status || ''} 
+                ${item.hora || ''} 
+                ${dataF}
+            `.toUpperCase();
+
+            // Retorna verdadeiro se o termo digitado existir em qualquer lugar do registro
+            return conteudoCartao.includes(busca);
         });
 
         if (registrosFiltrados.length === 0) {
@@ -240,6 +251,7 @@
                 <strong>RESPONSÁVEL:</strong> ${item.resp || ''}<br>
                 <strong>CRIANÇA/ADOLESCENTE:</strong> ${item.crianca || ''}<br>
                 <strong>DATA:</strong> ${dataExibicao} | <strong>HORA:</strong> ${item.hora || ''}h<br>
+                <strong>CONSELHEIRO(A):</strong> ${item.conselheiro || ''}<br>
                 <strong>STATUS:</strong> <span class="${item.status === 'PENDENTE' ? 'status-pendente' : 'status-confirmado'}">${item.status}</span><br>
                 ${btnHtml}
             </div>`;
