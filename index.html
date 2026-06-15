@@ -72,11 +72,120 @@
     }
 
     function salvarENotificar() {
+        const respInput = document.getElementById('resp').value;
+        const criancaInput = document.getElementById('crianca').value;
+        const dataInput = document.getElementById('data').value;
+        const horaInput = document.getElementById('horario').value;
+        const conselheiroInput = document.getElementById('conselheiro').value;
+        const telInput = document.getElementById('telefone').value;
+
+        if(!respInput || !criancaInput || !dataInput || !horaInput || !telInput) {
+            alert("Por favor, preencha todos os campos obrigatórios para gerar a notificação.");
+            return;
+        }
+
         const novo = {
             id: Date.now(),
-            resp: document.getElementById('resp').value.toUpperCase(),
-            crianca: document.getElementById('crianca').value.toUpperCase(),
-            data: document.getElementById('data').value,
-            hora: document.getElementById('horario').value,
-            conselheiro: document.getElementById('conselheiro').value.toUpperCase(),
-            tel: document.getElementById('
+            resp: respInput.toUpperCase(),
+            crianca: criancaInput.toUpperCase(),
+            data: dataInput,
+            hora: horaInput,
+            conselheiro: conselheiroInput.toUpperCase(),
+            tel: telInput,
+            status: 'PENDENTE'
+        };
+        
+        const dataF = novo.data ? novo.data.split('-').reverse().join('/') : "";
+        
+        // Lógica para definir a saudação com base no horário preenchido
+        let saudacao = "Olá!";
+        if (novo.hora) {
+            const horaInteira = parseInt(novo.hora.split(':')[0], 10);
+            
+            if (horaInteira >= 0 && horaInteira < 12) {
+                saudacao = "Bom dia!";
+            } else if (horaInteira >= 12 && horaInteira < 18) {
+                saudacao = "Boa tarde!";
+            } else {
+                saudacao = "Boa noite!";
+            }
+        }
+        
+        // Texto oficial adaptado dinamicamente com a saudação automática
+        const msg = `${saudacao}\n\n` +
+                    `O Conselho Tutelar do Paranoá solicita o comparecimento do(a) Sr.(a) *${novo.resp}*, responsável pela criança/adolescente *${novo.crianca}*, para tratar de assunto pertinente ao acompanhamento e à garantia dos direitos da criança/adolescente.\n\n` +
+                    `Solicitamos que Vossa Senhoria compareça à sede deste Conselho Tutelar no dia *${dataF}*, às *${novo.hora}h*, ocasião em que será atendido(a) pelo(a) Conselheiro(a) Tutelar *${novo.conselheiro}*.\n\n` +
+                    `⚠️ *É indispensável a presença da criança/adolescente e a apresentação dos seguintes documentos:*\n` +
+                    `• Documento de identificação do responsável;\n` +
+                    `• Documento de identificação da criança/adolescente;\n` +
+                    `• Outros documentos que entender pertinentes ao caso.\n\n` +
+                    `📍 *Endereço:*\n` +
+                    `Área Especial Quadra 21, ao lado da UBS 01 do Paranoá.\n\n` +
+                    `Solicitamos a gentileza de confirmar o recebimento desta convocação.\n\n` +
+                    `_Observação: O não comparecimento injustificado poderá ensejar a adoção das medidas cabíveis previstas no Estatuto da Criança e do Adolescente – ECA, inclusive aquelas constantes dos artigos 236 e 249 da Lei nº 8.069/1990._`;
+
+        window.open(`https://api.whatsapp.com/send?phone=55${novo.tel.replace(/\D/g, '')}&text=${encodeURIComponent(msg)}`, '_blank');
+        
+        bancoDados.push(novo);
+        localStorage.setItem('atendimentos', JSON.stringify(bancoDados));
+        alert("Notificação salva e enviada para o WhatsApp!");
+        
+        // Limpar campos de forma segura
+        document.getElementById('resp').value = '';
+        document.getElementById('crianca').value = '';
+        document.getElementById('data').value = '';
+        document.getElementById('horario').value = '';
+        document.getElementById('conselheiro').value = '';
+        document.getElementById('telefone').value = '';
+
+        filtrarLista();
+    }
+
+    function confirmarAoConselheiro(id) {
+        const item = bancoDados.find(i => i.id === id);
+        if (!item) return;
+
+        const dataF = item.data ? item.data.split('-').reverse().join('/') : '';
+        const msg = `Olá ${item.conselheiro}, a presença de ${item.resp} (Caso: ${item.crianca}) para o atendimento do dia ${dataF} às ${item.hora} foi CONFIRMADA.`;
+        
+        window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(msg)}`, '_blank');
+        item.status = 'CONFIRMADO';
+        localStorage.setItem('atendimentos', JSON.stringify(bancoDados));
+        filtrarLista();
+    }
+
+    function filtrarLista() {
+        const buscaInput = document.getElementById('inputBusca');
+        const busca = buscaInput ? buscaInput.value.toUpperCase() : '';
+        const lista = document.getElementById('listaResultados');
+        if (!lista) return;
+
+        lista.innerHTML = '';
+        
+        bancoDados.filter(item => {
+            const respMatch = item.resp ? item.resp.includes(busca) : false;
+            const criancaMatch = item.crianca ? item.crianca.includes(busca) : false;
+            return respMatch || criancaMatch;
+        }).forEach(item => {
+            const btnHtml = item.status === 'PENDENTE' 
+                ? `<button class="btn-acao" style="background:#007bff" onclick="confirmarAoConselheiro(${item.id})">CONFIRMAR AO CONSELHEIRO</button>`
+                : `<span class="status-confirmado">✔ CONFIRMADO AO CONSELHEIRO</span>`;
+
+            const dataExibicao = item.data ? item.data.split('-').reverse().join('/') : '';
+
+            lista.innerHTML += `<div class="item-lista">
+                <strong>RESP: ${item.resp || ''}</strong><br>
+                CRIANÇA: ${item.crianca || ''}<br>
+                DATA: ${dataExibicao} | HORA: ${item.hora || ''}<br>
+                STATUS: <span class="${item.status === 'PENDENTE' ? 'status-pendente' : 'status-confirmado'}">${item.status}</span><br>
+                ${btnHtml}
+            </div>`;
+        });
+    }
+    
+    // Executa a listagem inicial ao carregar a página
+    filtrarLista();
+</script>
+
+</body>
+</html>
